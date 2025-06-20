@@ -7,12 +7,18 @@ async function getWeather() {
   try {
     const response = await fetch(proxyUrl);
     const data = await response.json();
+    console.log(data); // 🔍 Debugging
+
+    if (!data || !data.current || !data.location) {
+      document.getElementById("weatherResult").innerHTML = "<p>No weather data found.</p>";
+      return;
+    }
 
     const result = `
       <h2>${data.location.name}, ${data.location.region}</h2>
       <p>Temperature: ${data.current.temp_c}°C</p>
       <p>Condition: ${data.current.condition.text}</p>
-      <img src="${data.current.condition.icon}" alt="icon">
+      <img src="${data.current.condition.icon}" alt="weather icon">
     `;
     document.getElementById("weatherResult").innerHTML = result;
   } catch (error) {
