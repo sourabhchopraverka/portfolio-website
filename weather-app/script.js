@@ -1,12 +1,12 @@
 async function getWeather() {
   const city = document.getElementById("cityInput").value;
-  const apiKey = "0c783178ca74b93b97bc350d0ec6f28f";
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  const apiKey = "377b9ac6c413b2efe127e0c36822eb14"; // or your working default key
+  const originalUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`;
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(proxyUrl);
     const data = await response.json();
-    console.log(data); // 🔍 Log what the API is returning
 
     if (data.cod !== 200) {
       document.getElementById("weatherResult").innerHTML = `<p>Error: ${data.message}</p>`;
@@ -20,7 +20,7 @@ async function getWeather() {
     `;
     document.getElementById("weatherResult").innerHTML = result;
   } catch (error) {
-    console.error("Network error:", error);
+    console.error("Proxy or network error:", error);
     document.getElementById("weatherResult").innerHTML = `<p>Network error. Please try again.</p>`;
   }
 }
