@@ -16,10 +16,14 @@ async function getWeather() {
 
     const result = `
       <h2>${data.location.name}, ${data.location.region}</h2>
-      <p>Temperature: ${data.current.temp_c}°C</p>
-      <p>Condition: ${data.current.condition.text}</p>
+      <p><strong>Temperature:</strong> ${data.current.temp_c}°C (feels like ${data.current.feelslike_c}°C)</p>
+      <p><strong>Condition:</strong> ${data.current.condition.text}</p>
+      <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
+      <p><strong>Wind:</strong> ${data.current.wind_kph} km/h</p>
+      <p><strong>Last Updated:</strong> ${data.current.last_updated}</p>
       <img src="${data.current.condition.icon}" alt="weather icon">
     `;
+
     document.getElementById("weatherResult").innerHTML = result;
   } catch (error) {
     console.error("Error fetching weather:", error);
