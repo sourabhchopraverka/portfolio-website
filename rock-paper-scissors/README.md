@@ -37,4 +37,20 @@ A fun and interactive Rock, Paper, Scissors game built with HTML, CSS, and JavaS
 ---
 
 ## Folder Structure
+rock-paper-scissors/
+├── index.html
+├── style.css
+├── script.js
+└── README.md
 
+## Future Improvements
+
+- Add sound effects
+- Add countdown timer animation
+- Create a two-player mode
+
+---
+
+## License
+
+This project is open-source and free to use for educational purposes.
