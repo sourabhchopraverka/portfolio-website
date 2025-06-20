@@ -15,7 +15,7 @@ document.querySelectorAll(".choice").forEach(button => {
 });
 
 playAgainBtn.addEventListener("click", () => {
-  resultDiv.textContent = "Make your move!";
+  resultDiv.textContent = "Make your move.";
   playAgainBtn.style.display = "none";
 });
 
@@ -23,16 +23,16 @@ function playGame(userChoice) {
   const cpuChoice = choices[Math.floor(Math.random() * 3)];
   const winner = getWinner(userChoice, cpuChoice);
 
-  let message = `You chose ${emoji(userChoice)}, CPU chose ${emoji(cpuChoice)}. `;
+  let message = `You chose ${userChoice}, CPU chose ${cpuChoice}. `;
 
   if (winner === "user") {
     userScore++;
-    message += "🎉 You Win!";
+    message += "You win!";
   } else if (winner === "cpu") {
     cpuScore++;
-    message += "💥 You Lose!";
+    message += "You lose!";
   } else {
-    message += "🤝 It's a Draw!";
+    message += "It's a draw.";
   }
 
   userScoreSpan.textContent = userScore;
@@ -52,12 +52,3 @@ function getWinner(user, cpu) {
   }
   return "cpu";
 }
-
-function emoji(choice) {
-  return {
-    rock: "🪨",
-    paper: "📄",
-    scissors: "✂️"
-  }[choice];
-}
-
