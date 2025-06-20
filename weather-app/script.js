@@ -1,32 +1,68 @@
-async function getWeather() {
-  const city = document.getElementById("cityInput").value;
+const cityInput = document.getElementById("cityInput");
+const lastCity = localStorage.getItem("lastCity");
+const toggleBtn = document.getElementById("toggleMode");
+
+if (lastCity) {
+  cityInput.value = lastCity;
+  fetchWeather(lastCity);
+}
+
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+});
+
+function getWeather() {
+  const city = cityInput.value.trim();
+  if (city) {
+    localStorage.setItem("lastCity", city);
+    fetchWeather(city);
+  }
+}
+
+async function fetchWeather(city) {
   const apiKey = "7f376bb7c9dd422fabe65703252006";
-  const originalUrl = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(originalUrl)}`;
+  const base = `http://api.weatherapi.com/v1`;
+  const currentUrl = `${base}/current.json?key=${apiKey}&q=${city}`;
+  const forecastUrl = `${base}/forecast.json?key=${apiKey}&q=${city}&days=3`;
+
+  const proxyCurrent = `https://api.allorigins.win/raw?url=${encodeURIComponent(currentUrl)}`;
+  const proxyForecast = `https://api.allorigins.win/raw?url=${encodeURIComponent(forecastUrl)}`;
 
   try {
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
-    console.log(data); // 🔍 Debugging
+    const [currentRes, forecastRes] = await Promise.all([
+      fetch(proxyCurrent),
+      fetch(proxyForecast)
+    ]);
 
-    if (!data || !data.current || !data.location) {
-      document.getElementById("weatherResult").innerHTML = "<p>No weather data found.</p>";
-      return;
-    }
+    const current = await currentRes.json();
+    const forecast = await forecastRes.json();
 
+    // Current weather
     const result = `
-      <h2>${data.location.name}, ${data.location.region}</h2>
-      <p><strong>Temperature:</strong> ${data.current.temp_c}°C (feels like ${data.current.feelslike_c}°C)</p>
-      <p><strong>Condition:</strong> ${data.current.condition.text}</p>
-      <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
-      <p><strong>Wind:</strong> ${data.current.wind_kph} km/h</p>
-      <p><strong>Last Updated:</strong> ${data.current.last_updated}</p>
-      <img src="${data.current.condition.icon}" alt="weather icon">
+      <h2>${current.location.name}, ${current.location.region}</h2>
+      <p><strong>Temperature:</strong> ${current.current.temp_c}°C (feels like ${current.current.feelslike_c}°C)</p>
+      <p><strong>Condition:</strong> ${current.current.condition.text}</p>
+      <p><strong>Humidity:</strong> ${current.current.humidity}%</p>
+      <p><strong>Wind:</strong> ${current.current.wind_kph} km/h</p>
+      <p><strong>Last Updated:</strong> ${current.current.last_updated}</p>
+      <img src="${current.current.condition.icon}" alt="icon">
     `;
-
     document.getElementById("weatherResult").innerHTML = result;
+
+    // 3-Day Forecast
+    const forecastHTML = forecast.forecast.forecastday.map(day => `
+      <div class="forecast-day">
+        <h4>${day.date}</h4>
+        <img src="${day.day.condition.icon}" alt="">
+        <p>${day.day.condition.text}</p>
+        <p><strong>${day.day.avgtemp_c}°C</strong></p>
+      </div>
+    `).join("");
+
+    document.getElementById("forecastResult").innerHTML = `<div class="forecast">${forecastHTML}</div>`;
   } catch (error) {
     console.error("Error fetching weather:", error);
     document.getElementById("weatherResult").innerHTML = `<p>Network error. Please try again.</p>`;
+    document.getElementById("forecastResult").innerHTML = ``;
   }
 }
